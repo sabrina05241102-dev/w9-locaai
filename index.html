@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國小二年級：二位數直式加減與量長度</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #333333;
+            --muted: #666666;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* 頂部標籤欄 */
+        .tabs {
+            display: flex;
+            background: var(--primary);
+            padding: 8px 4px;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px 8px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--secondary);
+            transform: scaleX(0);
+            transition: transform 0.25s ease;
+        }
+
+        .tab:hover {
+            color: #fff;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: var(--secondary);
+        }
+
+        .tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* 主要內容區 */
+        .content {
+            padding: 32px 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .unit-card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            overflow: hidden;
+            animation: cardIn 0.4s ease forwards;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        .unit-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding: 16px 20px;
+            border-bottom: 2px solid #eee;
+            margin: 0;
+        }
+
+        .unit-body {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+        }
+
+        /* 加減法區塊 */
+        .math-problem {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 12px 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .problem-statement {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .calculation-area {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 12px 0;
+        }
+
+        .digit-column {
+            text-align: center;
+            min-width: 40px;
+        }
+
+        .digit {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--muted);
+            border-radius: 6px;
+            margin: 4px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: inline-block;
+            line-height: 32px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .digit.occupied {
+            background: #e8f4fd;
+        }
+
+        .digit.carried {
+            background: #fff3e0;
+            color: var(--accent);
+        }
+
+        .digit.result {
+            border-color: var(--success);
+            background: #d5f5e3;
+        }
+
+        .operator {
+            font-size: 1.5rem;
+            margin: 0 4px;
+            color: var(--muted);
+        }
+
+        .equal-sign {
+            font-size: 1.3rem;
+            margin-left: 8px;
+            color: var(--primary);
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        /* 測量長度區塊 */
+        .ruler {
+            width: 100%;
+            height: 40px;
+            background: #fff;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            margin: 12px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ruler::before {
+            content: '0 cm';
+            position: absolute;
+            left: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .ruler::after {
+            content: '10 cm';
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .ruler-ticks {
+            position: absolute;
+            top: 14px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .ruler-tick {
+            height: 100%;
+            width: 2px;
+            background: var(--primary);
+            position: absolute;
+        }
+
+        .ruler-label {
+            position: absolute;
+            bottom: -14px;
+            left: 0;
+            right: 0;
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .ruler-carriage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            transition: left 0.1s;
+            z-index: 10;
+        }
+
+        .carriage-pointer {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #fff;
+            background: var(--secondary);
+        }
+
+        /* 我是暫時用不著 var(--white) 這種 CSS 變數，改直接用 #fff */
+        
+        .instruction-box {
+            background: #f0f7ff;
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .instruction-box h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .instruction-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .practice-area {
+            margin-top: 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid var(--muted);
+            border-radius: 6px;
+            margin: 8px 0;
+            transition: border-color 0.2s;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .check-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-family: inherit;
+        }
+
+        .check-btn:hover {
+            background: #2980b9;
+        }
+
+        .result-msg {
+            margin-top: 12px;
+            font-size: 1rem;
+        }
+
+        .result-correct {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .result-wrong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .reset-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-family: inherit;
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 600px) {
+            .tab {
+                padding: 10px 4px;
+                font-size: 0.95rem;
+            }
+            .content {
+                padding: 20px 12px;
+            }
+            .digit {
+                width: 28px;
+                height: 28px;
+                font-size: 1.1rem;
+                line-height: 28px;
+            }
+        }
+
+        /* 隱形滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs" id="tabs">
+        <div class="tab active" data-unit="addition">二位數直式加法</div>
+        <div class="tab" data-unit="subtraction">二位數直式減法</div>
+        <div class="tab" data-unit="length">量長度</div>
+    </div>
+
+    <div class="content" id="content">
+        <!-- 單元內容將由 JS 動態生成 -->
+    </div>
+
+    <script>
+        // ==========================================
+        // 資料：二位數直式加法教學內容
+        // ==========================================
+        const additionUnit = {
+            title: '二位數直式加法',
+            introduction: '二位數直式加法是指兩個兩位數的數字相加，我們需要注意個位和十位的位值。',
+            concept: [
+                '「個位」是最右邊的數字，代表 1、2、3... 9 個單位',
+                '「十位」是倒數第二個數字，代表 10、20、30... 90 個單位',
+                '相加時，先算個位，如果總和超過 9，就要「進位」到十位',
+                '再算十位，連進位的值一起算'
+            ],
+            example: '例題：25 + 37 = ?',
+            exampleBreakdown: [
+                '個位相加：5 + 7 = 12，寫下 2，進 1',
+                '十位相加：2 + 3 + 1 (進位) = 6',
+                '所以 25 + 37 = 62'
+            ],
+            practices: [
+                { question: '12 + 34 = ?', hint: '先算個位：2 + 4 = ...', answer: 46 },
+                { question: '23 + 45 = ?', hint: '先算個位：3 + 5 = ...', answer: 68 },
+                { question: '34 + 26 = ?', hint: '個位 4 + 6 = 10，需要進位喔！', answer: 60 },
+                { question: '41 + 38 = ?', hint: '個位 1 + 8 = 9，十位要記住進 1', answer: 79 },
+                { question: '57 + 33 = ?', hint: '個位相加是 10，記得進位', answer: 90 }
+            ]
+        };
+
+        // ==========================================
+        // 資料：二位數直式減法教學內容
+        // ==========================================
+        const subtractionUnit = {
+            title: '二位數直式減法',
+            introduction: '二位數直式減法是指兩個兩位數的數字相減，我們需要注意個位和十位的位值。若個位不足以扣除，需要「借位」來解決。',
+            concept: [
+                '「個位」是最右邊的數字，代表 1、2、3... 9 個單位',
+                '「十位」是倒數第二個數字，代表 10、20、30... 90 個單位',
+                '相減時，先算個位，如果個位不足以扣除，就需要從十位「借 10」來補',
+                '借位後個位變成原個位 + 10，十位則減 1',
+                '再算十位餘下的數'
+            ],
+            example: '例題：64 - 38 = ?',
+            exampleBreakdown: [
+                '個位不足以扣除（4 < 8），需要從十位借 1',
+                '個位變成 4 + 10 = 14，做 14 - 8 = 6',
+                '十位變成 6 - 1 = 3，做 3 - 3 = 0',
+                '所以 64 - 38 = 26'
+            ],
+            practices: [
+                { question: '52 - 34 = ?', hint: '個位 2 不足以扣除，要向十位借 1', answer: 18 },
+                { question: '73 - 45 = ?', hint: '先檢查個位是否足夠扣除', answer: 28 },
+                { question: '61 - 37 = ?', hint: '個位 1 不足以扣除，需要借位', answer: 24 },
+                { question: '85 - 49 = ?', hint: '個位需要借位，借完後個位變 15', answer: 36 },
+                { question: '92 - 56 = ?', hint: '個位借位後變 12 - 6，十位也相應變小', answer: 36 }
+            ]
+        };
+
+        // ==========================================
+        // 資料：量長度教學內容
+        // ==========================================
+        const lengthUnit = {
+            title: '量長度',
+            introduction: '量長度是用來比較物體長短或是確實測量長度的單位。國小二年級主要學習公分（cm）和公尺（m）。',
+            concept: [
+                '「公分（cm）」是小一位長度單位，約為一個大人的大拇指寬度',
+                '「公尺（m）」是大一位長度單位，約為一個成年人的步長',
+                '換算關係：1公尺 = 100公分',
+                '適合量較小的物體（筆、書、桌高）用公分',
+                '適合量較大的物體（房間、遊樂場）用公尺'
+            ],
+            example: '例題：一支筆的長度約為 15公分。',
+            exampleBreakdown: [
+                '我們可以用尺子從 0 開始量到筆的一端',
+                '讀數就是筆的長度，單位是公分（cm）',
+                '如果筆超過 10 公分的刻度，就看個位和十位的組合'
+            ],
+            practices: [
+                {
+                    question: '請量一下這支筆的長度是多少公分？',
+                    type: 'interactive',
+                    hint: '將尺子的 0 端對準筆的一端，讀取另一端的數值',
+                    unit: 'cm'
+                },
+                {
+                    question: '下面哪個物體長度約 30公分？\nA. 一張桌子\nB. 一支鉛筆\nC. 一棵樹',
+                    type: 'multiple',
+                    options: [
+                        { text: 'A. 一張桌子', isCorrect: false },
+                        { text: 'B. 一支鉛筆', isCorrect: true },
+                        { text: 'C. 一棵樹', isCorrect: false }
+                    ],
+                    hint: '想想筆的長度大約是多少？'
+                },
+                {
+                    question: '下面握筆長度約 15cm 的物體是？',
+                    type: 'drag-drop',
+                    items: [
+                        { text: '小珠子', size: '小', correct: true },
+                        { text: '大球', size: '大', correct: false },
+                        { text: '長方形塊', size: '中', correct: false }
+                    ],
+                    hint: '想像你的手掌大約有 few 公分寬，哪個最合適？'
+                }
+            ]
+        };
+
+        // ==========================================
+        // 狀態管理
+        // ==========================================
+        const state = {
+            currentUnit: 'addition',
+            currentQuestionIndex: 0,
+            score: { correct: 0, total: 0 }
+        };
+
+        // ==========================================
+        // DOM 元素快取
+        // ==========================================
+        const elements = {
+            tabs: document.getElementById('tabs'),
+            content: document.getElementById('content'),
+            mathProblem: null,
+            calculationArea: null,
+            digits: [],
+            answerInput: null,
+            checkBtn: null,
+            resultMsg: null,
+            ruler: null,
+            rulerTicks: null,
+            rulerCarriage: null,
+            practiceArea: null
+        };
+
+        // 初始化 DOM 參考
+        function initElements() {
+            elements.tabs = document.getElementById('tabs');
+            elements.content = document.getElementById('content');
+            
+            // 綁定標籤切換事件
+            elements.tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab')) {
+                    switchUnit(e.target.dataset.unit);
+                }
+            });
+        }
+
+        // ==========================================
+        // 單元切換功能
+        // ==========================================
+        function switchUnit(unitId) {
+            // 更新標籤狀態
+            const tabs = elements.tabs.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (tab.dataset.unit === unitId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // 顯示對應單元內容
+            const unitData = getUnitData(unitId);
+            displayUnitContent(unitData);
+            
+            // 重置練習狀態
+            resetPracticeState();
+            state.currentUnit = unitId;
+            state.currentQuestionIndex = 0;
+            state.score = { correct: 0, total: 0 };
+        }
+
+        function getUnitData(unitId) {
+            switch (unitId) {
+                case 'addition': return additionUnit;
+                case 'subtraction': return subtractionUnit;
+                case 'length': return lengthUnit;
+                default: return additionUnit;
+            }
+        }
+
+        function displayUnitContent(unit) {
+            const card = document.createElement('div');
+            card.className = 'unit-card';
+            card.innerHTML = `
+                <h1 class="unit-title">${unit.title}</h1>
+                <div class="unit-body">
+                    <p>${unit.introduction}</p>
+                    ${unit.concept ? `<div class="section">
+                        <span class="section-title">學習重點</span>
+                        <ul>
+                            ${unit.concept.map(c => `<li>${c}</li>`).join('')}
+                        </ul>
+                    </div>` : ''}
+                    ${unit.example ? `
+                        <div class="math-problem">
+                            <div class="problem-statement">${unit.example}</div>
+                            <div class="calculation-area">
+                                ${unit.exampleBreakdown.map(breakdown => `<span>${breakdown}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${unit.practices ? `
+                        <div class="section" id="practice-section">
+                            <span class="section-title">練習題</span>
+                            ${renderPractices(unit.practices)}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            elements.content.innerHTML = '';
+            elements.content.appendChild(card);
+            
+            // 重新尋找練習區域
+            elements.practiceArea = card.querySelector('#practice-section');
+            
+            // 如果有練習題，初始化第一題
+            if (unit.practices && elements.practiceArea) {
+                initPracticeSession(unit.practices);
+            }
+        }
+
+        function renderPractices(practices) {
+            return practices.map((practice, index) => {
+                if (practice.type === 'multiple') {
+                    return `
+                        <div class="math-problem" data-index="${index}" style="margin-bottom: 16px;">
+                            <div class="problem-statement">${practice.question}</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                ${practice.options.map((opt, i) => `
+                                    <div class="digit" style="width: 60px; height: 30px; border: 2px solid ${opt.isCorrect ? 'var(--success)' : 'var(--muted)'"; background: ${opt.isCorrect ? '#d5f5e3' : '#fff'; cursor: not-allowed;" data-option="${i}">${opt.text}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                } else if (practice.type === 'drag-drop') {
+                    return `
+                        <div class="math-problem" style="margin-bottom: 16px;">
+                            <div class="problem-statement">${practice.question}</div>
+                            <div class="ruler" style="margin: 12px 0;">
+                                <div class="ruler-ticks" id="ruler-ticks-${index}"></div>
+                                <div class="ruler-carriage" id="ruler-carriage-${index}" style="left: 20%;">
+                                    <div class="carrier-pointer" style="border-color: white;"></div>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;">
+                                ${practice.items.map((item, i) => `
+                                    <div class="digit" style="width: 60px; height: 30px; background: #e0e0e0; text-align: center;" draggable="true" data-size="${item.size}" data-index="${i}">
+                                        ${item.text}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `);
+                } else {
+                    // 標準填空題
+                    return `
+                        <div class="math-problem" data-index="${index}" style="margin-bottom: 16px;">
+                            <div class="problem-statement">${practice.question}</div>
+                            <input type="text" class="answer-input" placeholder="輸入答案" 
+                                   data-hint="${practice.hint}" 
+                                   data-correct="${practice.answer}"
+                                   maxlength="3">
+                            <div class="hint" style="display: none; margin-top: 6px; color: var(--muted); font-size: 0.85rem;">${practice.hint}</div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // ==========================================
+        // 練習題互動功能
+        // ==========================================
+        function initPracticeSession(practices) {
+            const firstPractice = practices[0];
+            if (!firstPractice) return;
+            
+            // 根據問題類型綁定事件
+            if (firstPractice.type === 'multiple') {
+                initMultipleChoice(practices);
+            } else if (firstPractice.type === 'drag-drop') {
+                initDragDrop(practices);
+            } else {
+                initFillInTheBlank(practices);
+            }
+        }
+
+        function initFillInTheBlank(practices) {
+            // 綁定所有輸入框
+            const inputs = elements.content.querySelectorAll('.answer-input');
+            const checkBtns = elements.content.querySelectorAll('.check-btn');
+            const resultMsgs = elements.content.querySelectorAll('.result-msg');
+            
+            inputs.forEach((input, i) => {
+                input.addEventListener('focus', () => {
+                    const hint = input.dataset.hint;
+                    const msg = input.nextElementSibling;
+                    if (msg && msg.classList.contains('result-msg')) {
+                        msg.style.display = 'none';
+                    }
+                });
+                
+                input.addEventListener('blur', () => {
+                    checkAnswer(input, practices);
+                });
+            });
+            
+            if (checkBtns.length > 0) {
+                checkBtns[0].addEventListener('click', () => {
+                    // 檢查所有輸入框
+                    let allCorrect = true;
+                    inputs.forEach((input, i) => {
+                        checkAnswer(input, [practices[i]]);
+                        if (input.value.trim() !== String(practices[i].answer)) {
+                            allCorrect = false;
+                        }
+                    });
+                    updateScore(allCorrect);
+                });
+            }
+        }
+
+        function checkAnswer(input, practice) {
+            const userAnswer = parseInt(input.value) || 0;
+            const correctAnswer = practice.answer;
+            const resultMsg = input.nextElementSibling;
+            
+            if (userAnswer === correctAnswer) {
+                input.style.borderColor = 'var(--success)';
+                input.style.background = '#d5f5e3';
+                if (resultMsg) {
+                    resultMsg.textContent = '✓ 答對了！';
+                    resultMsg.className = 'result-msg result-correct';
+                    resultMsg.style.display = 'block';
+                }
+                updateScore(true);
+            } else {
+                input.style.borderColor = 'var(--accent)';
+                input.style.background = '#ffe8e8';
+                if (resultMsg) {
+                    resultMsg.textContent = `✗ 答錯了，正確答案是 ${correctAnswer}`;
+                    resultMsg.className = 'result-msg result-wrong';
+                    resultMsg.style.display = 'block';
+                }
+                updateScore(false);
+            }
+        }
+
+        function updateScore(isCorrect) {
+            state.score.total++;
+            if (isCorrect) {
+                state.score.correct++;
+            }
+            // 顯示分數
+            const scoreEl = elements.content.querySelector('.score-display');
+            if (scoreEl) {
+                scoreEl.innerHTML = `分數：${state.score.correct}/${state.score.total}`;
+            }
+        }
+
+        function initMultipleChoice(practices) {
+            const options = elements.content.querySelectorAll('.digit[data-option]');
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    const index = parseInt(option.dataset.option);
+                    const practice = practices.find(p => p.question === options[0]?.parentElement?.querySelector('.problem-statement')?.textContent || '');
+                    // 簡單的檢查邏輯
+                    option.style.background = '#d5f5e3';
+                    option.style.color = 'var(--success)';
+                });
+            });
+        }
+
+        function initDragDrop(practices) {
+            // 簡易量長度互動
+            const carriage = elements.content.querySelector('.ruler-carriage');
+            const ticks = elements.content.querySelector('.ruler-ticks');
+            const dragItems = elements.content.querySelectorAll('.digit[draggable="true"]');
+            
+            // 簡易互動：拖拽到尺子上
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.dataset.size);
+                });
+            });
+            
+            // 點擊尺子刻度選擇答案
+            const ticksElem = document.getElementById(`ruler-ticks-${state.currentQuestionIndex}`);
+            if (ticksElem) {
+                ticksElem.addEventListener('click', (e) => {
+                    const rect = ticksElem.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const position = Math.round((clickX / rect.width) * 10);
+                    handleLengthAnswer(position);
+                });
+            }
+        }
+
+        function handleLengthAnswer(position) {
+            // 顯示結果
+            const practice = lengthUnit.practices[0];
+            const correctPos = 15; // 正確答案約 15 公分
+            
+            const isCorrect = Math.abs(position - correctPos) <= 2;
+            
+            // 創建結果顯示
+            let existingResult = elements.content.querySelector('.drag-result');
+            if (existingResult) existingResult.remove();
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'drag-result';
+            resultDiv.style.marginTop = '12px';
+            resultDiv.style.padding = '8px';
+            resultDiv.style.background = isCorrect ? '#d5f5e3' : '#ffe8e8';
+            resultDiv.style.borderRadius = '6px';
+            resultDiv.style.border = '2px solid ' + (isCorrect ? 'var(--success)' : 'var(--accent)');
+            resultDiv.innerHTML = `<strong>${isCorrect ? '✓ 正確！' : '✗ 重練'}：實際長度約 ${correctPos}公分</strong>`;
+            
+            // 找到練習區域後面加入結果
+            const practiceSection = elements.content.querySelector('#practice-section');
+            if (practiceSection) {
+                practiceSection.appendChild(resultDiv);
+            }
+            
+            updateScore(isCorrect);
+        }
+
+        // ==========================================
+        // 重置功能
+        // ==========================================
+        function resetPracticeState() {
+            // 移除之前的結果顯示
+            const existingResults = elements.content.querySelectorAll('.result-msg, .drag-result');
+            existingResults.forEach(el => el.remove());
+            
+            // 重置所有輸入框
+            const inputs = elements.content.querySelectorAll('.answer-input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.style.borderColor = 'var(--muted)';
+                input.style.background = 'white';
+            });
+        }
+
+        // ==========================================
+        // 初始化
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initElements();
+            
+            // 預設顯示第一個單元
+            switchUnit('addition');
+            
+            // 添加重置按鈕（在內容最後）
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'reset-btn';
+            resetBtn.textContent = '重新開始';
+            resetBtn.addEventListener('click', () => {
+                resetPracticeState();
+                state.score = { correct: 0, total: 0 };
+                state.currentQuestionIndex = 0;
+                // 重新顯示當前單元
+                const unit = getUnitData(state.currentUnit);
+                displayUnitContent(unit);
+            });
+            
+            elements.content.appendChild(resetBtn);
+        });
+    </script>
+</body>
+</html>

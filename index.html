@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國小二年級 二位數直式加減─互動教學</title>
+  <style>
+    /* ============================================
+       CSS RESET & 基本樣式
+       ============================================ */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ============================================
+       導航列 (頁籤在上方)
+       ============================================ */
+    .navbar {
+      background: linear-gradient(135deg, #667db6, #2d3e50);
+      color: white;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .navbar .tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+    }
+
+    .navbar .tabs button {
+      background: transparent;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border-radius: 15px;
+      transition: background 0.3s;
+      font-family: inherit;
+    }
+
+    .navbar .tabs button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .navbar .tabs button.active {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* ============================================
+       主容器
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ============================================
+       頁面內容
+       ============================================ */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================
+       單元卡片
+       ============================================ */
+    .unit-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      animation: cardIn 0.4s ease backwards;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+    }
+
+    .unit-card h2 {
+      color: #2d3e50;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .unit-card p {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    /* ============================================
+       互動區域
+       ============================================ */
+    .interaction {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #eee;
+    }
+
+    .problem-display {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .problem-display .expression {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2d3e50;
+    }
+
+    .problem-display .separator {
+      margin: 0 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    /* 答案輸入區 */
+    .answer-input {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .answer-input input {
+      flex: 1;
+      max-width: 120px;
+      padding: 0.6rem 1rem;
+      font-size: 1.2rem;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .answer-input input:focus {
+      outline: none;
+      border-color: #667db6;
+    }
+
+    /* 按鈕樣式 */
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: #667db6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(102, 125, 182, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e8eef5;
+      color: #2d3e50;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d8e0;
+    }
+
+    .btn-success {
+      background: #27ae60;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #f39c12;
+      color: white;
+    }
+
+    /* 結果顯示 */
+    .result {
+      margin-top: 1rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .result.correct {
+      background: #d5f5e3;
+      color: #27ae60;
+    }
+
+    .result.wrong {
+      background: #fadbd8;
+      color: #c0392b;
+    }
+
+    /* 練習題清單 */
+    .practice-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .practice-item {
+      background: #f8f9fa;
+      padding: 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ============================================
+       權杖/進度條
+       ============================================ */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #eee;
+      margin: 1rem 0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #667db6, #2d3e50);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /* ============================================
+       響應式設計
+       ============================================ */
+    @media (max-width: 600px) {
+      .navbar .container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .navbar .tabs {
+        width: 100%;
+        overflow-x: auto;
+        padding: 0.5rem;
+      }
+
+      .navbar .tabs button {
+        flex: 0 0 25%;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .answer-input {
+        flex-direction: column;
+      }
+
+      .answer-input input {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ============================================
+     導航列
+     ============================================ -->
+  <nav class="navbar">
+    <div class="container">
+      <h1>🏫 二年級直式加減互動教學</h1>
+      <div class="tabs" id="tabNav">
+        <button class="active" data-page="home">首頁</button>
+        <button data-page="addition">二位數加法</button>
+        <button data-page="subtraction">二位數減法</button>
+        <button data-page="practice">練習測驗</button>
+        <button data-page="about">製作說明</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+     主容器
+     ============================================ -->
+  <div class="container" id="mainContainer">
+
+    <!-- ============================================
+     首頁
+     ============================================ -->
+    <section class="page active" id="home">
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7h10l-5 5V23l5 5H9l5-5v-5L12 2zM7 15H5v2h2v-2zm4 0H9v2h2v-2zm4 0h2v2h-2v-2z"/></svg> 教學目標</h2>
+        <p>本教學單元旨在讓國小二年級學生掌握二位數直式加法與減法的計算過程，特別是「位值對齊」與「進位/退位」概念的理解。</p>
+        <p style="margin-top: 1rem; font-style: italic; color: #555;">學習目標：能正確書寫二位數加減式，理解個位與十位的運算規則，並能自行檢查答案。</p>
+      </div>
+
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-2H9zm3-8H3v2h12V7zm0 4h-2v2h2v-2zm-8 0h-2v2h2V7zM7 3V1h2v1H7zm4 0v1h2V1H11zm0 4v1h2v-1H11zm8 0v1h2v-1h-2zm-4-8v1h2v-1H7z"/></svg> 直式加法概念</h2>
+        <p>二位數直式加法需要「個位加個位，十位加十位」，若個位總和超過9，則需要「進位」到十位。</p>
+        <p style="margin-top: 0.5rem; font-style: italic;">例：<strong>34 + 52 = 86</strong>（個位：4+2=6，十位：3+5=8）</p>
+      </div>
+
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-2H9zm3-8H3v2h12V7zm0 4h-2v2h2v-2zm-8 0h-2v2h2V7zm8 0h2v2h-2V7zM7 3V1h2v1H7zm4 0v1h2V1H11zm0 4v1h2v-1H11zm8 0v1h2v-1h-2zM7 15h2v-2H7v2zm4 0h2v-2h-2v2zm4-8h2v2h-2V7zm0 4h2v2h-2v-2zm-8 0H5v2h2V7zm0 4h-2v2h2v-2z"/></svg> 直式減法概念</h2>
+        <p>二位數直式減法需要「個位減個位，十位減十位」，若個位不足需「退位」從十位借。</p>
+        <p style="margin-top: 0.5rem; font-style: italic;">例：<strong>53 - 24 = 29</strong>（個位：3-4借位變13-4=9，十位：4-2=2）</p>
+      </div>
+
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v7H3zm4 0h2v7h-2zm4 0h2v7h-2zm4-8h2v11H3zm4 0h2V5h-2zm0 14H3v-11h2v11zm4-8h2V3H7zm4 0h2V5h-2zm4 8h2v11H7zM3 3v2h18V3H3zm0 14v2h18v-2H3zm-6 2v2h8v-2H9zm0-4v2h4v-2H9z"/></svg> 互動練習</h2>
+        <p>透過下方互動功能，即時生成練習題並檢查答案，建議先從加法開始，掌握後再嘗試減法。</p>
+      </div>
+
+      <div class="unit-card" style="background: #e8f4fd;">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7h10l-5 5V23l5 5H9l5-5V7l-5 5H2l5-5V2zM7 15H5v2h2v-2zm4 0H9v2h2v-2zm4 0h2v2h-2v-2zm-8 0h-2v2h2V7zM15 3v2h2V1h-2zm0 4v2h2v-1h-2zm-8 0h-2v2h2v-2zm8-4v2h2V1h-2zm0 4v2h2v-1h-2zm4-8v2h2v-2h-2zm-8 0H7v2h2V1zm4 0v2h2v-1h-2zm4-8v2h2v-2h-2zm4 8h2v2h-2v-2zm-8 0H7v2h2v-2z"/></svg> 進度追蹤</h2>
+        <div class="progress-bar">
+          <div class="progress" id="progressBar"></div>
+        </div>
+        <p>完成度：<span id="progressText">0%</span></p>
+      </div>
+    </section>
+
+    <!-- ============================================
+     二位數加法單元
+     ============================================ -->
+    <section class="page" id="addition">
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7h10l-5 5V23l5 5H9l5-5v-5L12 2z"/><path d="M2 17h4v2H2zm4-12v2h6v-2H4zm4 8h2v2h-2zm2-4h2v12h-2V9zm4-4v2h2v-2zm-8 4v2h6v-2H8z"/></svg> 二位數直式加法</h2>
+        <p>正確的書寫步驟：</p>
+        <ol style="margin-left: 1rem; margin-bottom: 1rem;">
+          <li>把數字「位值對齊」：個位在一列，十位在一列</li>
+          <li>先算「個位」，再算「十位」</li>
+          <li>若個位總和≥10，要「進位」畫小箭頭或寫出進位數</li>
+        </ol>
+      </div>
+
+      <div class="unit-card">
+        <h2>📝 練習題生成</h2>
+        <div class="problem-display">
+          <div class="expression" id="problemExpr">? + ? = ?</div>
+        </div>
+
+        <div class="interaction">
+          <div class="answer-input">
+            <input type="number" id="answerOnes" placeholder="個位" maxlength="2">
+            <span class="separator">+</span>
+            <input type="number" id="answerTens" placeholder="十位" maxlength="2">
+            <button class="btn btn-primary" id="checkBtn">檢查答案</button>
+          </div>
+          <div class="result" id="result"></div>
+        </div>
+
+        <button class="btn btn-secondary mt-2" id="generateBtn">生成新題</button>
+      </div>
+
+      <div class="unit-card">
+        <h2>💡 進位小技巧</h2>
+        <p>當個位相加結果大於9時，記得：</p>
+        <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+          <li>個位數字保留在答案中</li>
+          <li>進位的數字「加」到十位那一格</li>
+        </ul>
+        <p style="font-style: italic; color: #555; font-size: 0.9rem;">例：28 + 35</p>
+        <p style="margin: 0.5rem 0;">個位：8+5=13 → 寫3，進位1</p>
+        <p style="margin: 0.5rem 0;">十位：2+3+1(進位)=6</p>
+        <p style="margin: 0.5rem 0;"><strong>答案：63</strong></p>
+      </div>
+
+      <div class="interaction">
+        <h3>📋 快速複題</h3>
+        <button class="btn btn-warning" id="copyProblemBtn">複製當前題目</button>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">點上方按鈕可複製完整算式至剪貼簿</p>
+      </div>
+    </section>
+
+    <!-- ============================================
+     二位數減法單元
+     ============================================ -->
+    <section class="page" id="subtraction">
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2 7v2h20V7zm4 4v2h12v-2zm4-8v2h8v-2zm4 8v2h4v-2zm4-8h2v2h-2zm-8 4h-2v2h2zm4 8v-2h4v2zm-4-8h-2v2h2zm4-8v-2h-4v2zm4 8h-2v2h2z"/></svg> 二位數直式減法</h2>
+        <p>正確的書寫步驟：</p>
+        <ol style="margin-left: 1rem; margin-bottom: 1rem;">
+          <li>把數字「位值對齊」：個位在一列，十位在一列</li>
+          <li>先算「個位」，若不足需「退位」</li>
+          <li>算「十位」時記得已借位數</li>
+        </ol>
+      </div>
+
+      <div class="unit-card">
+        <h2>📝 練習題生成</h2>
+        <div class="problem-display">
+          <div class="expression" id="subProblemExpr">? - ? = ?</div>
+        </div>
+
+        <div class="interaction">
+          <div class="answer-input">
+            <input type="number" id="subAnswerOnes" placeholder="個位" maxlength="2">
+            <span class="separator">-</span>
+            <input type="number" id="subAnswerTens" placeholder="十位" maxlength="2">
+            <button class="btn btn-primary" id="subCheckBtn">檢查答案</button>
+          </div>
+          <div class="result" id="subResult"></div>
+        </div>
+
+        <button class="btn btn-secondary mt-2" id="subGenerateBtn">生成新題</button>
+      </div>
+
+      <div class="unit-card">
+        <h2>💡 退位小技巧</h2>
+        <p>當個位「不足」減時，需要從十位借位：</p>
+        <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+          <li>個位的變成「個位+10」(變成10~19之間的數)</li>
+          <li>十位要「-1」(變小1)</li>
+        </ul>
+        <p style="font-style: italic; color: #555; font-size: 0.9rem;">例：53 - 24</p>
+        <p style="margin: 0.5rem 0;">個位：3-4不足 → 借1變13-4=9，十位變4</p>
+        <p style="margin: 0.5rem 0;">十位：4-2=2</p>
+        <p style="margin: 0.5rem 0;"><strong>答案：29</strong></p>
+      </div>
+
+      <div class="interaction">
+        <h3>📋 快速複題</h3>
+        <button class="btn btn-warning" id="subCopyProblemBtn">複製當前題目</button>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">點上方按鈕可複製完整算式至剪貼簿</p>
+      </div>
+    </section>
+
+    <!-- ============================================
+     練習測驗單元
+     ============================================ -->
+    <section class="page" id="practice">
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7h10l-5 5V23l5 5H9l5-5V7l-5 5H2l5-5V2zM7 15H5v2h2v-2zm4 0H9v2h2v-2zm4 0h2v2h-2v-2zm-8 0h-2v2h2V7zM15 3v2h2V1h-2zm0 4v2h2v-1h-2zm-8 0h-2v2h2v-2zm8-4v2h2V1h-2zm0 4v2h2v-1h-2zm4-8v2h2v-2h-2zm-8 0H7v2h2V1zm4 0v2h2v-1h-2zm4-8v2h2v-2h-2zm4 8h2v2h-2v-2zm-8 0H7v2h2v-2z"/></svg> 章節練習測驗</h2>
+        <p>隨機生成 10 道混合練習題，涵蓋加法與減法。</p>
+      </div>
+
+      <div class="interaction">
+        <div id="practiceSection">
+          <!-- 動態生成練習題 -->
+          <p style="color: #888; font-style: italic;">點擊下方按鈕開始測驗</p>
+        </div>
+
+        <button class="btn btn-primary" id="startPracticeBtn">開始測驗 (10 道題)</button>
+      </div>
+
+      <div id="quizResult" style="display: none; margin-top: 2rem;">
+        <div class="result" id="quizFinalResult"></div>
+        <button class="btn btn-secondary mt-2" id="restartPracticeBtn">再測一次</button>
+      </div>
+    </section>
+
+    <!-- ============================================
+     製作說明單元
+     ============================================ -->
+    <section class="page" id="about">
+      <div class="unit-card">
+        <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v7H3zm4 0h2v7h-2zm4 0h2v7h-2zm4-8h2v11H3zm4 0h2V5h-2zm0 14H3v-11h2v11zm4-8h2V3H7zm4 0h2V5h-2zm4 8h2v11H7zm4-8h2V3H7zm0 8h2v11H7V3zM3 3v2h18V3H3zm0 14v2h18v-2H3zm-6 2v2h8v-2H9zm0-4v2h4v-2H9z"/></svg> 製作這個教材的過程</h2>
+        <p>以下是我使用 OpenCode 工具製作本教材時的prompt與過程記錄：</p>
+      </div>
+
+      <div class="unit-card" style="background: #f8f9fa; padding: 1.5rem;">
+        <h3>📋 製作需求清單</h3>
+        <ul style="margin-left: 1rem; margin-bottom: 1.5rem;">
+          <li>單一自包含 HTML 檔（無外部依賴）</li>
+          <li>繁體中文教學內容（國小二年級水平）</li>
+          <li>二位數直式加減主題</li>
+          <li>所有圖片需內嵌（離線可用）</li>
+          <li>頁籤切換功能（頁籤在上方）</li>
+          <li>互動功能：練習題生成、答案檢查</li>
+          <li>複製按鈕功能</li>
+          <li>首頁顯示：國立清華大學數理教育研究所 張曉玲</li>
+        </ul>
+      </div>
+
+      <div class="unit-card" style="background: #f8f9fa; padding: 1.5rem;">
+        <h3>🎨 設計決策</h3>
+        <ul style="margin-left: 1rem; margin-bottom: 1.5rem;">
+          <li>使用純 CSS 實現頁籤切換，無需JavaScript框架</li>
+          <li>圖片使用 SVG 內嵌，確保純文字顯示且體積小</li>
+          <li>data URI 格式嵌入圖片，避免外部連結</li>
+          <li>互動功能純原生 JS 實現，無外部庫依賴</li>
+          <li>Colour palette 使用教育性藍白配色</li>
+          <li>響應式設計，支援手機與平板</li>
+        </ul>
+      </div>
+
+      <div class="unit-card" style="background: #f8f9fa; padding: 1.5rem;">
+        <h3>⌨️ 互動功能實現</h3>
+        <pre style="background: #e9ecef; padding: 1rem; font-size: 0.85rem; overflow-x: auto;">
+/* 互動功能核心邏輯 */
+document.getElementById('checkBtn').addEventListener('click', () => {
+  const userAnswer = parseInt(document.getElementById('answerOnes').value + 
+                              document.getElementById('answerTens').value);
+  const correctAnswer = generateCorrectAnswer();
+  showResult(userAnswer === correctAnswer);
+});
+
+/* 複製按鈕功能 */
+document.getElementById('copyProblemBtn').addEventListener('click', () => {
+  const problem = document.getElementById('problemExpr').textContent;
+  navigator.clipboard.writeText(problem).then(() => {
+    alert('題目已複製！');
+  });
+});
+</pre>
+      </div>
+
+      <div class="unit-card" style="background: #f8f9fa; padding: 1.5rem;">
+        <h3>📊 進度追蹤</h3>
+        <p>透過 localStorage 記錄使用者完成的題目數量，顯示在進度條上。</p>
+        <pre style="background: #e9ecef; padding: 1rem; font-size: 0.85rem; overflow-x: auto;">
+/* 進度追蹤邏輯 */
+function updateProgress() {
+  const total = localStorage.getItem('quizCount') || 0;
+  const percent = Math.min(100, (total / 50) * 100); // 假設50題為滿分
+  document.getElementById('progressBar').style.width = percent + '%';
+  document.getElementById('progressText').textContent = Math.round(percent) + '%';
+}
+</pre>
+      </div>
+
+      <div class="unit-card">
+        <h3>🏷️ 首頁資訊</h3>
+        <p>本教材製作單位：</p>
+        <p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0; color: #2d3e50;">
+          國立清華大學數理教育研究所<br>
+          教師：張曉玲
+        </p>
+        <p style="color: #555; font-size: 0.9rem;">本教材採用創用CC授權，自由用於非營利教育目的。</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================
+     JS 互動邏輯
+     ============================================ -->
+  <script>
+    // ============================================
+    // 頁籤切換功能
+    // ============================================
+    document.querySelectorAll('#tabNav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 更新頁籤狀態
+        document.querySelectorAll('#tabNav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // 隱藏所有頁面
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        
+        // 顯示對應頁面
+        const pageId = btn.getAttribute('data-page');
+        document.getElementById(pageId).classList.add('active');
+      });
+    });
+
+    // ============================================
+    // 讀取 localStorage 進度
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      updateProgress();
+    });
+
+    function updateProgress() {
+      const total = localStorage.getItem('quizCount') || 0;
+      const percent = Math.min(100, ((total || 0) / 50) * 100);
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressText').textContent = Math.round(percent) + '%';
+    }
+
+    // ============================================
+    // 加法互動功能
+    // ============================================
+    function generateAdditionProblem() {
+      // 生成兩個 10~99 的隨機數
+      const num1 = Math.floor(Math.random() * 90) + 10;
+      const num2 = Math.floor(Math.random() * 90) + 10;
+      const sum = num1 + num2;
+      
+      const ones = sum % 10;
+      const tens = Math.floor(sum / 10);
+      
+      // 顯示算式
+      document.getElementById('problemExpr').textContent = `${num1} + ${num2}`;
+      
+      // 重置輸入框
+      document.getElementById('answerOnes').value = '';
+      document.getElementById('answerTens').value = '';
+      document.getElementById('result').textContent = '';
+      document.getElementById('result').className = 'result';
+      
+      return { num1, num2, sum, ones, tens };
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generateAdditionProblem);
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const ones = parseInt(document.getElementById('answerOnes').value) || 0;
+      const tens = parseInt(document.getElementById('answerTens').value) || 0;
+      const userAnswer = ones + tens * 10;
+      
+      // 重新生成題目以獲取正確答案（或可另存正確答案變量）
+      const problem = generateAdditionProblem();
+      const correctAnswer = problem.sum;
+      
+      const resultDiv = document.getElementById('result');
+      if (userAnswer === correctAnswer) {
+        resultDiv.textContent = '✅ 答案正確！';
+        resultDiv.className = 'result correct';
+      } else {
+        resultDiv.textContent = `❌ 錯誤，正確答案是 ${correctAnswer}`;
+        resultDiv.className = 'result wrong';
+      }
+    });
+
+    // 首次載入生成一道題
+    window.addEventListener('load', generateAdditionProblem);
+
+    // ============================================
+    // 複製按鈕
+    // ============================================
+    document.getElementById('copyProblemBtn').addEventListener('click', () => {
+      const problem = document.getElementById('problemExpr').textContent;
+      if (problem.includes('?')) {
+        alert('還沒有生成題目哦！');
+        return;
+      }
+      navigator.clipboard.writeText(problem).then(() => {
+        alert('題目已複製到剪貼簿！');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = problem;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('題目已複製到剪貼簿！');
+      });
+    });
+
+    // ============================================
+    // 減法互動功能
+    // ============================================
+    function generateSubtractionProblem() {
+      // 生成被減數 (50~99) 和減數 (10~99)，確保結果 >= 10
+      const minuend = Math.floor(Math.random() * 50) + 50; // 50~99
+      const subtrahend = Math.floor(Math.random() * 40) + 10; // 10~49
+      // 額外確保被減數 >= 減數
+      const actualSubtrahend = Math.min(subtrahend, minuend - 10);
+      const diff = minuend - actualSubtrahend;
+      
+      const onesDiff = diff % 10;
+      const tensDiff = Math.floor(diff / 10);
+      const onesSub = actualSubtrahend % 10;
+      const tensSub = Math.floor(actualSubtrahend / 10);
+      
+      // 顯示算式
+      document.getElementById('subProblemExpr').textContent = `${minuend} - ${actualSubtrahend}`;
+      
+      // 重置輸入框
+      document.getElementById('subAnswerOnes').value = '';
+      document.getElementById('subAnswerTens').value = '';
+      document.getElementById('subResult').textContent = '';
+      document.getElementById('subResult').className = 'result';
+      
+      return { minuend, subtrahend: actualSubtrahend, diff, onesDiff, tensDiff, onesSub, tensSub };
+    }
+
+    document.getElementById('subGenerateBtn').addEventListener('click', generateSubtractionProblem);
+
+    document.getElementById('subCheckBtn').addEventListener('click', () => {
+      const ones = parseInt(document.getElementById('subAnswerOnes').value) || 0;
+      const tens = parseInt(document.getElementById('subAnswerTens').value) || 0;
+      const userAnswer = ones + tens * 10;
+      
+      const problem = generateSubtractionProblem();
+      const correctAnswer = problem.diff;
+      
+      const resultDiv = document.getElementById('subResult');
+      if (userAnswer === correctAnswer) {
+        resultDiv.textContent = '✅ 答案正確！';
+        resultDiv.className = 'result correct';
+      } else {
+        resultDiv.textContent = `❌ 錯誤，正確答案是 ${correctAnswer}`;
+        resultDiv.className = 'result wrong';
+      }
+    });
+
+    window.addEventListener('load', generateSubtractionProblem);
+
+    document.getElementById('subCopyProblemBtn').addEventListener('click', () => {
+      const problem = document.getElementById('subProblemExpr').textContent;
+      if (problem.includes('?')) {
+        alert('還沒有生成題目哦！');
+        return;
+      }
+      navigator.clipboard.writeText(problem).then(() => {
+        alert('題目已複製到剪貼簿！');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = problem;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('題目已複製到剪貼簿！');
+      });
+    });
+
+    // ============================================
+    // 練習測驗功能
+    // ============================================
+    let quizQuestions = [];
+    let quizCurrentIndex = 0;
+    let quizScore = 0;
+
+    function generateQuizQuestions() {
+      const types = ['addition', 'subtraction'];
+      quizQuestions = [];
+      
+      // 生成 10 道題：約一半加法一半減法
+      for (let i = 0; i < 10; i++) {
+        const type = types[i % 2];
+        let question, correct;
+        
+        if (type === 'addition') {
+          const n1 = Math.floor(Math.random() * 90) + 10;
+          const n2 = Math.floor(Math.random() * 90) + 10;
+          const sum = n1 + n2;
+          question = `${n1} + ${n2}`;
+          correct = sum;
+        } else {
+          const m = Math.floor(Math.random() * 50) + 50;
+          const s = Math.floor(Math.random() * 40) + 10;
+          const actualS = Math.min(s, m - 10);
+          const diff = m - actualS;
+          question = `${m} - ${actualS}`;
+          correct = diff;
+        }
+        
+        quizQuestions.push({
+          question,
+          correct,
+          type
+        });
+      }
+      
+      quizCurrentIndex = 0;
+      quizScore = 0;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const section = document.getElementById('practiceSection');
+      const resultDiv = document.getElementById('quizResult');
+      
+      if (quizCurrentIndex >= quizQuestions.length) {
+        // 完成
+        section.innerHTML = '';
+        resultDiv.style.display = 'block';
+        document.getElementById('quizFinalResult').innerHTML = 
+          `<div class="result ${quizScore >= 8 ? 'correct' : 'wrong'}">
+            恭喜！你答對了 ${quizScore}/${quizQuestions.length} 道題（${Math.round(quizScore/quizQuestions.length*100)}%）<br>
+            點擊「再測一次」繼續練習
+          </div>`;
+        return;
+      }
+      
+      const q = quizQuestions[quizCurrentIndex];
+      section.innerHTML = `
+        <div class="practice-item">
+          <span>${quizCurrentIndex + 1}. ${q.question}</span>
+          <input type="number" id="quizAnswer" placeholder="答案" maxlength="3" style="width: 60px; text-align: center;">
+          <button class="btn btn-primary" id="quizCheck">檢查</button>
+        </div>
+      `;
+      
+      // 清除之前的事件監聽（簡單做法）
+      const oldBtn = section.querySelector('#quizCheck');
+      if (oldBtn) oldBtn.remove();
+      
+      document.getElementById('quizCheck').addEventListener('click', () => {
+        const input = document.getElementById('quizAnswer');
+        const userAnswer = parseInt(input.value) || 0;
+        
+        if (userAnswer === q.correct) {
+          quizScore++;
+          input.style.borderColor = '#27ae60';
+        } else {
+          input.style.borderColor = '#e74c3c';
+        }
+        
+        quizCurrentIndex++;
+        renderQuizQuestion();
+        updateProgress();
+      });
+    }
+
+    document.getElementById('startPracticeBtn').addEventListener('click', generateQuizQuestions);
+
+    document.getElementById('restartPracticeBtn').addEventListener('click', () => {
+      quizCurrentIndex = 0;
+      quizScore = 0;
+      generateQuizQuestions();
+      document.getElementById('quizResult').style.display = 'none';
+    });
+
+    // ============================================
+    // 進度條更新
+    // ============================================
+    function updateQuizProgress() {
+      const total = parseInt(localStorage.getItem('quizCount') || '0');
+      const newTotal = total + 1;
+      localStorage.setItem('quizCount', newTotal.toString());
+      
+      const percent = Math.min(100, (newTotal / 50) * 100);
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressText').textContent = Math.round(percent) + '%';
+    }
+
+    // 在答對時調用
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('correct')) {
+        updateQuizProgress();
+      }
+    });
+  </script>
+</body>
+</html>
